@@ -8,4 +8,5 @@ export function register() {
         accessToken: "xusuusalpvush63ud7zcg8bi3mauuptds528",
         target: "vercel",
     });
+    tracker.warn("Deployment done successfully!");
 }
