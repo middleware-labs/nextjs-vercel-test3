@@ -12,10 +12,13 @@ export default function Index() {
   if (!data) return null
 
   return (
-    <ul>
-      {data.map((p) => (
-        <PersonComponent key={p.id} person={p} />
-      ))}
-    </ul>
+      <>
+        <ul>
+          {data.map((p) => (
+              <PersonComponent key={p.id} person={p} />
+          ))}
+        </ul>
+          <button onClick={() => {window.open('/')}}>Press me</button>
+      </>
   )
 }
