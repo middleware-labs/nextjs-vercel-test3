@@ -18,11 +18,11 @@ class MyDocument extends Document {
               __html: `
                 if (window.Middleware){
                   Middleware.track({
-                    serviceName:"TestingNext.js3.8",
-                    projectName:"TestingNext.js3.8",
+                    serviceName:"TestingNext.js3.10",
+                    projectName:"TestingNext.js3.10",
                     accountKey:"mneotgoiuddsxemqjncpbdskjipwwksqnpfj",
                     target:"https://p2i13hg.middleware.io",
-                    tracePropagationTargets: ["/nextjs-vercel-test3.vercel.app/i"]
+                    tracePropagationTargets: [/nextjs-vercel-test3.vercel.app/i,/localhost:3000/i]
                 });
                 }
               `,
