@@ -22,7 +22,7 @@ class MyDocument extends Document {
                     projectName:"Testing Python & Next.js3.4",
                     accountKey:"mneotgoiuddsxemqjncpbdskjipwwksqnpfj",
                     target:"https://p2i13hg.middleware.io",
-                    tracePropagationTargets: [/localhost:3000/i,/nextjs-vercel-test3.vercel.app/i]
+                    tracePropagationTargets: [/nextjs-vercel-test3.vercel.app/i, /localhost:3000/i]
                 });
                 }
               `,
