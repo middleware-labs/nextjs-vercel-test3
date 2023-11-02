@@ -10,9 +10,9 @@ export function register() {
     });*/
     // @ts-ignore
     tracker.track({
-        serviceName: "nextjs-vercel-test3.5",
+        serviceName: "nextjs-vercel-test3.8",
         accessToken: "xusuusalpvush63ud7zcg8bi3mauuptds528",
-        target: "vercel",
+        target: "https://p2i13hg.middleware.io:443",
     });
     /*tracker.track({
         projectName: "vercel-project-71.2",
