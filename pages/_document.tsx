@@ -18,12 +18,12 @@ class MyDocument extends Document {
               __html: `
                 if (window.Middleware){
                   Middleware.track({
-                    serviceName:"TestingNext.js3.11",
-                    projectName:"TestingNext.js3.11",
-                    accountKey:"baoylkgjcdhbqegaflbcpcuxfzbyywpocfcx",
-                    target:"https://p2i13hg.middleware.io",
+                    serviceName:"TestingNext.js3.1.0",
+                    projectName:"TestingNext.js3.1.0",
+                    accountKey:"nvvsoiamyzypphdxrdvcqkmfksukkfsjggju",
+                    target:"https://demo.middleware.io",
                     tracePropagationTargets: [/nextjs-vercel-test3.vercel.app/i,/localhost:3000/i]
-                });
+                  });
                 }
               `,
             }}
