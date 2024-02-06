@@ -8,6 +8,7 @@ export function register() {
         accessToken: "deoorojzrgpsvihfcgkcsvhrwnmzqeahvhou",
         target: "vercel",
     });
+
     /*tracker.track({
         projectName: "vercel-project-71.2",
         serviceName: "vercel-service-71.2",
