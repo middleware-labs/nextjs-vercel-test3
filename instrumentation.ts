@@ -3,11 +3,19 @@ import tracker from '@middleware.io/agent-apm-nextjs';
 
 export function register() {
     // @ts-ignore
-    tracker.track({
-        serviceName: "nextjs-vercel-test3.1.0",
-        accessToken: "deoorojzrgpsvihfcgkcsvhrwnmzqeahvhou",
-        target: "vercel",
-    });
+    // tracker.track({
+    //     serviceName: "nextjs-vercel-test3.1.0",
+    //     accessToken: "deoorojzrgpsvihfcgkcsvhrwnmzqeahvhou",
+    //     target: "vercel",
+    // });
+
+    export function register() {
+        tracker.track({
+            serviceName: "stage.kaushal.service",
+            accessToken: "deoorojzrgpsvihfcgkcsvhrwnmzqeahvhou",
+            target: "vercel",
+        });
+    }
 
     /*tracker.track({
         projectName: "vercel-project-71.2",
