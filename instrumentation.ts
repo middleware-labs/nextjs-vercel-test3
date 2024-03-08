@@ -9,13 +9,11 @@ export function register() {
     //     target: "vercel",
     // });
 
-    export function register() {
-        tracker.track({
-            serviceName: "stage.kaushal.service",
-            accessToken: "deoorojzrgpsvihfcgkcsvhrwnmzqeahvhou",
-            target: "vercel",
-        });
-    }
+    tracker.track({
+        serviceName: "stage.kaushal.service",
+        accessToken: "deoorojzrgpsvihfcgkcsvhrwnmzqeahvhou",
+        target: "vercel",
+    });
 
     /*tracker.track({
         projectName: "vercel-project-71.2",
