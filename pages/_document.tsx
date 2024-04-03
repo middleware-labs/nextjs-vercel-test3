@@ -6,13 +6,8 @@ class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          {/* Add your custom meta tags here */}
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          {/* Add your external scripts here */}
-          <script
-            src="https://cdnjs.middleware.io/browser/libs/0.0.1/middleware-rum.min.js"
-            type="text/javascript"
-          />
+          <script src="https://cdnjs.middleware.io/browser/libs/0.0.1/middleware-rum.min.js" type="text/javascript" />
           <script
             dangerouslySetInnerHTML={{
               __html: `

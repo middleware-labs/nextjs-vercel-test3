@@ -6,6 +6,7 @@ type PersonProps = {
 }
 
 export default function PersonComponent({ person }: PersonProps) {
+  console.log("Console Error Triggered...")
   return (
     <li>
       <Link href="/person/[id]" as={`/person/${person.id}`}>
