@@ -10,8 +10,8 @@ export function register() {
     // });
 
     tracker.track({
-        serviceName: "stage.kaushal.service",
-        accessToken: "deoorojzrgpsvihfcgkcsvhrwnmzqeahvhou",
+        serviceName: "front.sanjay.service",
+        accessToken: "kiydyoakfif2eknw2u040jntvtu5aurhmz9w",
         target: "vercel",
     });
 
