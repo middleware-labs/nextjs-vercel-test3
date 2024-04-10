@@ -1,9 +1,6 @@
 {
   "rewrites": [
-    { "source": "/sanjay", "destination": "https://sanjoyment.com/" },
-    { "source": "/person/:id", "destination": "https://google.com/" },
     { "source": "/person", "destination": "/" },
-    { "source": "/users", "destination": "/users.html" },
-    { "source": "/person/100", "destination": "/person/1" }
+    { "source": "/person/:id", "destination": "https://google.com/" }
   ]
 }
