@@ -1,3 +1,4 @@
+/*
 // @ts-ignore
 import tracker from '@middleware.io/agent-apm-nextjs';
 
@@ -10,4 +11,4 @@ export function register() {
     });
 
     tracker.warn("Deployment done successfully!");
-}
+}*/
