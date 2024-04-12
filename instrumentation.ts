@@ -9,5 +9,5 @@ export function register() {
     //     target: "vercel",
     // });
     //
-    // tracker.warn("Deployment done successfully!");
+    // tracker.warn("Deployment done successfully!!");
 }
