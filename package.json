@@ -6,8 +6,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@middleware.io/agent-apm-nextjs": "^1.2.2",
-    "next": "latest",
+    "next": "14.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "swr": "^2.0.0"
