@@ -5,9 +5,6 @@
     "build": "next build",
     "start": "next start"
   },
-  "engines": {
-    "node": "v18.x"
-  },
   "dependencies": {
     "@middleware.io/agent-apm-nextjs": "^1.2.2",
     "next": "latest",
