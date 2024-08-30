@@ -1,6 +1,7 @@
 const nextConfig = {
     experimental: {
-        instrumentationHook: true
+        instrumentationHook: true,
+        serverComponentsExternalPackages: ['@middleware.io/agent-apm-nextjs']
     }
 }
 module.exports = nextConfig
