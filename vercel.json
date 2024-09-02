@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/person", "destination": "/" },
-    { "source": "/person/:id", "destination": "https://google.com/" }
+    { "source": "/persons", "destination": "/" },
+    { "source": "/persons/:id", "destination": "https://google.com/" }
   ]
 }
