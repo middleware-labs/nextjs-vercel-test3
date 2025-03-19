@@ -11,7 +11,7 @@ export default function Index() {
   if (error) return <div>Failed to load</div>
   if (isLoading) return <div>Loading...</div>
   if (!data) return null
-    tracker.warn("File accessed successfully...!");
+  tracker.warn("File accessed successfully...!");
   return (
       <>
         <ul>
