@@ -9,7 +9,7 @@
     "@ai-sdk/openai": "^0.0.56",
     "@geist-ui/core": "^2.3.8",
     "@hookform/resolvers": "^3.9.0",
-    "@middleware.io/agent-apm-nextjs": "1.2.7-rc.1",
+    "@middleware.io/agent-apm-nextjs": "1.2.7-rc.2",
     "@next/mdx": "^14.2.13",
     "@next/third-parties": "^14.2.13",
     "@radix-ui/react-accordion": "^1.2.0",
