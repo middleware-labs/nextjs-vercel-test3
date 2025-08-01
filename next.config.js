@@ -1,3 +1,6 @@
+const MiddlewareWebpackPlugin =
+  require("@middleware.io/sourcemap-uploader/dist/webpack-plugin").default;
+
 const nextConfig = {
   productionBrowserSourceMaps: true,
   experimental: {
