@@ -1,6 +1,7 @@
 import useSWR from 'swr'
 import PersonComponent from '../components/Person'
 import type { Person } from '../interfaces'
+// @ts-ignore
 import tracker from '@middleware.io/agent-apm-nextjs';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
