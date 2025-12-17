@@ -1,3 +1,4 @@
+/*
 const MiddlewareWebpackPlugin =
   require("@middleware.io/sourcemap-uploader/dist/webpack-plugin").default;
 
@@ -25,3 +26,11 @@ const nextConfig = {
   },
 };
 module.exports = nextConfig;
+*/
+const nextConfig = {
+  experimental: {
+    instrumentationHook: true,
+    serverComponentsExternalPackages: ['@middleware.io/agent-apm-nextjs']
+  }
+}
+module.exports = nextConfig
