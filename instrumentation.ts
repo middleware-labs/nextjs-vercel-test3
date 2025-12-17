@@ -5,7 +5,7 @@ export function register() {
 
   tracker.track({
       serviceName: "nextjs-vercel-test3",
-      accessToken: "5xrocjh0p5ir233mvi34dvl5bepnyqri3rqb",
+      accessToken: "zuxpjjypnejbbwhkvkobudfitutobptgonae",
       // accessToken: "ohpv5ncdrwxjlr28xce4a9tmi3fvdcopn3f5",
       enableExceptionHandling: true,
       target: "vercel",
