@@ -23,7 +23,7 @@
     "@intercom/messenger-js-sdk": "^0.0.14",
     "@json2csv/node": "^7.0.1",
     "@lottiefiles/dotlottie-react": "^0.13.5",
-    "@mendable/firecrawl-js": "^1.29.1",
+    "@mendable/firecrawl-js": "^4.9.3",
     "@middleware.io/agent-apm-nextjs": "^1.4.2",
     "@middleware.io/sourcemap-uploader": "^0.1.5",
     "@monaco-editor/react": "^4.7.0",
