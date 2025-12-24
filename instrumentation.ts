@@ -38,14 +38,15 @@ import tracker from '@middleware.io/agent-apm-nextjs';
 export function register() {
 
   tracker.track({
-      serviceName: "nextjs-vercel-test3.2",
-      accessToken: "xvvviuolicluqilcgchjtqonlfymjtsevzox",
-      // accessToken: "ohpv5ncdrwxjlr28xce4a9tmi3fvdcopn3f5",
+      serviceName: "nextjs-vercel-test3.7",
+      accessToken: "5xrocjh0p5ir233mvi34dvl5bepnyqri3rqb",
       // enableExceptionHandling: true,
       target: "vercel",
-      /*customResourceAttributes: {
-          "app.version": "2.0.0"
-      }*/
+      // target: "https://sandbox.middleware.io:443",
+      customResourceAttributes: {
+          "app.version": "2.0.0",
+          "mw.account_key": "5xrocjh0p5ir233mvi34dvl5bepnyqri3rqb"
+      }
   });
 
   tracker.warn("Deployment done successfully!");

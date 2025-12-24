@@ -27,10 +27,11 @@ const nextConfig = {
 };
 module.exports = nextConfig;
 */
+/*
 const nextConfig = {
   experimental: {
     instrumentationHook: true,
-    serverComponentsExternalPackages: ['@middleware.io/agent-apm-nextjs']
+    // serverComponentsExternalPackages: ['@middleware.io/agent-apm-nextjs']
   }
 }
-module.exports = nextConfig
+module.exports = nextConfig*/
