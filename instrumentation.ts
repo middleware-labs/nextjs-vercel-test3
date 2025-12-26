@@ -38,7 +38,7 @@ import tracker from '@middleware.io/agent-apm-nextjs';
 export function register() {
 
   tracker.track({
-      serviceName: "nextjs-vercel-test3.7",
+      serviceName: "nextjs-vercel-test3.7.1",
       accessToken: "5xrocjh0p5ir233mvi34dvl5bepnyqri3rqb",
       // enableExceptionHandling: true,
       target: "vercel",
