@@ -6,7 +6,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@middleware.io/agent-apm-nextjs": "1.4.3-rc.3",
+    "@middleware.io/agent-apm-nextjs": "beta",
     "@ai-sdk/openai": "^1.1.9",
     "@anthropic-ai/sdk": "^0.56.0",
     "@calcom/embed-react": "^1.5.1",
@@ -215,6 +215,6 @@
     "vitest": "^3.2.4"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }
