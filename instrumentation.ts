@@ -1,11 +1,9 @@
-// @ts-ignore
-import tracker from '@middleware.io/agent-apm-nextjs';
-// import { registerOTel } from '@vercel/otel';
+import { registerOTel } from '@vercel/otel';
 
 /**
  * Vercel Trace Drains Instrumentation
  * 
- * This file configures OpenTelemetry tracing for Vercel Trace Drains.
+ * This file configures OpenTelemetry tracing for Vercel Trace Drains using @vercel/otel.
  * 
  * Required Environment Variables (set in Vercel Dashboard):
  * - OTEL_TRACES_EXPORTER=otlp (required - tells OpenTelemetry to use OTLP exporter)
@@ -29,14 +27,18 @@ import tracker from '@middleware.io/agent-apm-nextjs';
  * - Ensure instrumentationHook is enabled in next.config.js (it is)
  * - Make sure you're testing on a deployed environment, not just localhost
  */
-/*export function register() {
-    registerOTel({ 
-        serviceName: 'nextjs-vercel-test3.1' 
-    });
-}*/
 
 export function register() {
+  registerOTel({ 
+    serviceName: 'nextjs-vercel-test3.7.1'
+  });
+}
 
+/* BACKUP: Old code using @middleware.io/agent-apm-nextjs
+// @ts-ignore
+import tracker from '@middleware.io/agent-apm-nextjs';
+
+export function register() {
   tracker.track({
       serviceName: "nextjs-vercel-test3.7.1",
       accessToken: "5xrocjh0p5ir233mvi34dvl5bepnyqri3rqb",
@@ -51,3 +53,4 @@ export function register() {
 
   tracker.warn("Deployment done successfully!");
 }
+*/
