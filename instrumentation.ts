@@ -1,4 +1,4 @@
-import { registerOTel } from '@vercel/otel';
+// import { registerOTel } from '@vercel/otel';
 
 /**
  * Vercel Trace Drains Instrumentation
@@ -28,19 +28,19 @@ import { registerOTel } from '@vercel/otel';
  * - Make sure you're testing on a deployed environment, not just localhost
  */
 
-export function register() {
+/*export function register() {
   registerOTel({ 
     serviceName: 'nextjs-vercel-test3.7.1'
   });
-}
+}*/
 
-/* BACKUP: Old code using @middleware.io/agent-apm-nextjs
+ // BACKUP: Old code using @middleware.io/agent-apm-nextjs
 // @ts-ignore
 import tracker from '@middleware.io/agent-apm-nextjs';
 
 export function register() {
   tracker.track({
-      serviceName: "nextjs-vercel-test3.7.1",
+      serviceName: "nextjs-vercel-test3.7.2",
       accessToken: "5xrocjh0p5ir233mvi34dvl5bepnyqri3rqb",
       // enableExceptionHandling: true,
       target: "vercel",
@@ -53,4 +53,3 @@ export function register() {
 
   tracker.warn("Deployment done successfully!");
 }
-*/

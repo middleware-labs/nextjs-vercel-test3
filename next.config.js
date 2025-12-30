@@ -27,16 +27,16 @@ const nextConfig = {
 };
 module.exports = nextConfig;
 */
-const nextConfig = {
+/*const nextConfig = {
   experimental: {
     instrumentationHook: true,
     // serverComponentsExternalPackages: ['@middleware.io/agent-apm-nextjs'] // Not needed with @vercel/otel
   }
 }
 
-module.exports = nextConfig
+module.exports = nextConfig*/
 
-/* BACKUP: Old code with @middleware.io/agent-apm-nextjs
+ // BACKUP: Old code with @middleware.io/agent-apm-nextjs
 const nextConfig = {
   experimental: {
     instrumentationHook: true,
@@ -44,4 +44,3 @@ const nextConfig = {
   }
 }
 module.exports = nextConfig
-*/
