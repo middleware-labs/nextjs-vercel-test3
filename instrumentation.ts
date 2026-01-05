@@ -36,7 +36,7 @@
 
  // BACKUP: Old code using @middleware.io/agent-apm-nextjs
 // @ts-ignore
-import tracker from '@middleware.io/agent-apm-nextjs';
+/*import tracker from '@middleware.io/agent-apm-nextjs';
 
 export function register() {
   tracker.track({
@@ -52,4 +52,4 @@ export function register() {
   });
 
   tracker.warn("Deployment done successfully!");
-}
+}*/

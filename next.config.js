@@ -37,10 +37,10 @@ module.exports = nextConfig;
 module.exports = nextConfig*/
 
  // BACKUP: Old code with @middleware.io/agent-apm-nextjs
-const nextConfig = {
+/*const nextConfig = {
   experimental: {
     instrumentationHook: true,
     serverComponentsExternalPackages: ['@middleware.io/agent-apm-nextjs']
   }
 }
-module.exports = nextConfig
+module.exports = nextConfig*/
