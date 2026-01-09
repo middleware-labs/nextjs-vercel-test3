@@ -44,3 +44,34 @@ module.exports = nextConfig*/
   }
 }
 module.exports = nextConfig*/
+
+// Next.js configuration with redirects to generate redirect logs
+const nextConfig = {
+  // Redirects configuration - these will generate redirect logs in Vercel
+  async redirects() {
+    return [
+      {
+        source: '/old-home',
+        destination: '/',
+        permanent: false, // 307 Temporary Redirect - generates redirect logs
+      },
+      {
+        source: '/legacy',
+        destination: '/',
+        permanent: true, // 308 Permanent Redirect - generates redirect logs
+      },
+      {
+        source: '/redirect-test',
+        destination: '/person/1',
+        permanent: false,
+      },
+      {
+        source: '/old-api/:path*',
+        destination: '/api/:path*',
+        permanent: false,
+      },
+    ];
+  },
+};
+
+module.exports = nextConfig;

@@ -2,5 +2,22 @@
   "rewrites": [
     { "source": "/persons", "destination": "/" },
     { "source": "/persons/:id", "destination": "https://google.com/" }
+  ],
+  "redirects": [
+    {
+      "source": "/sample-redirect",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/test-redirect",
+      "destination": "/person/1",
+      "permanent": false
+    },
+    {
+      "source": "/old-page",
+      "destination": "/",
+      "permanent": true
+    }
   ]
 }
