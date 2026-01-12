@@ -21,5 +21,5 @@ import { registerOTel } from "@vercel/otel";
 
 export function register() {
     // Register the OpenTelemetry.
-    registerOTel("nextjs-vercel-test-1.0");
+    registerOTel({ serviceName: 'nextjs-vercel-test-1.0' });
 }

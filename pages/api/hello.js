@@ -1,6 +1,8 @@
-import { trace } from "@opentelemetry/api";
+import { trace } from '@opentelemetry/api';
+
+const tracer = trace.getTracer('your-component-1.0');
 export default async function handler(req, res) {
-    const span = trace.getTracer("your-component-1.0").startSpan("your-operation-1.0");
+    const span = tracer.startSpan("your-operation-1.0");
     try {
         span.setAttributes({
             'developer.name': 'alex',
