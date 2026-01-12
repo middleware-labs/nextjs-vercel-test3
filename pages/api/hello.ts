@@ -1,7 +1,9 @@
 import { trace } from '@opentelemetry/api';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 const tracer = trace.getTracer('your-component-1.0');
-export default async function handler(req, res) {
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const span = tracer.startSpan("your-operation-1.0");
     try {
         span.setAttributes({
@@ -12,5 +14,5 @@ export default async function handler(req, res) {
     } finally {
         span.end();
     }
-    res.status(200).json({ greetings: `Hello API Called.....` });
+    res.status(200).json({ greetings: `Hello API Called.` });
 }
