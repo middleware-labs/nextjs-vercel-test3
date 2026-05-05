@@ -20,7 +20,7 @@ export default function Index() {
               <PersonComponent key={p.id} person={p} />
           ))}
         </ul>
-          <button onClick={() => {window.open('/')}}>Press me</button>
+          <button onClick={() => {window.open('/')}}>Press Me</button>
       </>
   )
 }
