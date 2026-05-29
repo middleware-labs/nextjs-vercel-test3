@@ -1,0 +1,161 @@
+.page {
+  min-height: 100vh;
+  padding: 32px 24px;
+  font-family: sans-serif;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  box-sizing: border-box;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.backLink {
+  display: inline-block;
+  margin-top: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: #0f172a;
+}
+
+.card {
+  max-width: 640px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.statusCard {
+  composes: card;
+  padding: 32px;
+  text-align: center;
+}
+
+.statusLoading {
+  composes: statusCard;
+  color: #64748b;
+}
+
+.statusError {
+  composes: statusCard;
+  color: #b91c1c;
+}
+
+.header {
+  padding: 28px 28px 24px;
+  background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+  color: #fff;
+}
+
+.profileId {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.avatarMale {
+  composes: avatar;
+  background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+}
+
+.avatarFemale {
+  composes: avatar;
+  background: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+}
+
+.avatarNa {
+  composes: avatar;
+  background: linear-gradient(135deg, #cbd5e1 0%, #64748b 100%);
+}
+
+.avatarIcon {
+  width: 30px;
+  height: 30px;
+  fill: #fff;
+}
+
+.name {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.genderMale {
+  color: #2563eb;
+}
+
+.genderFemale {
+  color: #db2777;
+}
+
+.genderNa {
+  color: #64748b;
+}
+
+.validating {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1px;
+  background: #e2e8f0;
+  padding: 1px;
+}
+
+.field {
+  padding: 16px 20px;
+  background: #fff;
+}
+
+.fieldLabel {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+
+.fieldValue {
+  margin: 6px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+}

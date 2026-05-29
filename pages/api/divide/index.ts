@@ -1,10 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import { parseMsgParam, prefixErrorMessage } from '../../../lib/errorMsg'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { x, y, c } = req.query;
+  const { x, y, c } = req.query
+  const tag = parseMsgParam(req.query.msg)
 
   if (c) {
-    throw new Error("This is a new error for c");
+    throw new Error(prefixErrorMessage('This is a new error for c', tag))
   }
 
   if (!x || !y) {
