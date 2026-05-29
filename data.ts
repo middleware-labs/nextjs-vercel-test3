@@ -238,15 +238,5 @@ export const people = [
     skin_color: 'Fair',
     eye_color: 'Brown',
     gender: 'Female',
-  },
-  {
-    id: '25',
-    name: 'Count Dooku',
-    height: '193',
-    mass: '80',
-    hair_color: 'White',
-    skin_color: 'Fair',
-    eye_color: 'Brown',
-    gender: 'Male',
-  },
+  }
 ]

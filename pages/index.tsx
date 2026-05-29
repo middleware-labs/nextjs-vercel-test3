@@ -264,8 +264,8 @@ export default function Index() {
       </div>
 
       <section className={styles.panel}>
-        <h2 className={styles.titleList}>List</h2>
-        <p className={styles.subtitleList}>Earlier demo — people loaded from the API</p>
+        <h2 className={styles.titleList}> People List</h2>
+        <p className={styles.subtitleList}>List for Redirection — people loaded from the API</p>
         <ul className={styles.peopleList}>
           {data.map((p) => (
             <PersonComponent key={p.id} person={p} />
