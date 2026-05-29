@@ -50,6 +50,7 @@
 }
 
 .prefixBox {
+  width: 80%;
   flex-shrink: 0;
   margin-bottom: 16px;
   padding: 16px;
