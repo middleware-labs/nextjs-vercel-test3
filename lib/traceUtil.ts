@@ -43,6 +43,7 @@ export function finishSpanAsError(span: Span, error: Error): void {
   })
   applyErrorAttributes(span, error)
   span.recordException(error)
+  console.log('finishSpanAsError', span)
   span.end()
 }
 
