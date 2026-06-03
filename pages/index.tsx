@@ -16,9 +16,20 @@ interface LogButton {
   title: string
 }
 
+interface TraceButton {
+  label: string
+  source: TraceSource
+  action: () => void
+  title: string
+}
+
 const sources = ['build', 'static', 'lambda', 'edge', 'external', 'firewall', 'redirect'] as const
 
 type Source = (typeof sources)[number]
+
+const traceSources = ['lambda', 'nested', 'async', 'external', 'edge'] as const
+
+type TraceSource = (typeof traceSources)[number]
 
 const sourceLabelClass: Record<Source, string> = {
   build: styles.sourceBuild,
@@ -40,13 +51,38 @@ const sourceBtnClass: Record<Source, string> = {
   redirect: styles.btnRedirect,
 }
 
+const traceSourceLabelClass: Record<TraceSource, string> = {
+  lambda: styles.sourceTraceLambda,
+  nested: styles.sourceTraceNested,
+  async: styles.sourceTraceAsync,
+  external: styles.sourceTraceExternal,
+  edge: styles.sourceTraceEdge,
+}
+
+const traceSourceBtnClass: Record<TraceSource, string> = {
+  lambda: styles.btnTraceLambda,
+  nested: styles.btnTraceNested,
+  async: styles.btnTraceAsync,
+  external: styles.btnTraceExternal,
+  edge: styles.btnTraceEdge,
+}
+
 export default function Index() {
   const [groupPrefix, setGroupPrefix] = useState('')
+  const [traceGroupPrefix, setTraceGroupPrefix] = useState('')
   const { data, error, isLoading } = useSWR<Person[]>('/api/people', fetcher)
 
   const q = (params: Record<string, string>) => {
     const search = new URLSearchParams(params)
     const tag = groupPrefix.trim()
+    if (tag) search.set('msg', tag)
+    const s = search.toString()
+    return s ? `?${s}` : ''
+  }
+
+  const traceQ = (params: Record<string, string>) => {
+    const search = new URLSearchParams(params)
+    const tag = traceGroupPrefix.trim()
     if (tag) search.set('msg', tag)
     const s = search.toString()
     return s ? `?${s}` : ''
@@ -77,6 +113,29 @@ export default function Index() {
         break
       case 'redirect':
         window.open(`/sample-redirect?msg=${encoded}`, '_blank')
+        break
+    }
+  }
+
+  const triggerTraceRandom = (source: TraceSource) => {
+    const tag = randomLogTag()
+    const encoded = encodeURIComponent(tag)
+
+    switch (source) {
+      case 'lambda':
+        fetch(`/api/trace-error?msg=${encoded}`).catch(() => {})
+        break
+      case 'nested':
+        fetch(`/api/trace-error?type=nested&msg=${encoded}`).catch(() => {})
+        break
+      case 'async':
+        fetch(`/api/trace-error?type=async&msg=${encoded}`).catch(() => {})
+        break
+      case 'external':
+        fetch(`/api/trace-error?type=external&msg=${encoded}`).catch(() => {})
+        break
+      case 'edge':
+        fetch(`/api/trace-edge-error?msg=${encoded}`).catch(() => {})
         break
     }
   }
@@ -203,6 +262,63 @@ export default function Index() {
     },
   ]
 
+  const traceButtons: TraceButton[] = [
+    {
+      label: '🔴 Fatal Trace',
+      source: 'lambda',
+      title: 'Throws a fatal error inside an active OTEL span (nodejs)',
+      action: () => fetch(`/api/trace-error${traceQ({})}`).catch(() => {}),
+    },
+    {
+      label: '🔴 Handled Trace',
+      source: 'lambda',
+      title: 'Records exception on span and returns HTTP 500',
+      action: () => fetch(`/api/trace-error${traceQ({ type: 'handled' })}`).catch(() => {}),
+    },
+    {
+      label: '🔴 Trace Rejection',
+      source: 'lambda',
+      title: 'Triggers unhandled promise rejection inside an active span',
+      action: () => fetch(`/api/trace-error${traceQ({ type: 'rejection' })}`).catch(() => {}),
+    },
+    {
+      label: '🧩 Child Span Error',
+      source: 'nested',
+      title: 'Fails a nested child span (simulated DB query)',
+      action: () => fetch(`/api/trace-error${traceQ({ type: 'nested' })}`).catch(() => {}),
+    },
+    {
+      label: '🧩 Deep Nested Error',
+      source: 'nested',
+      title: 'Fails at the deepest span in a 3-level nested chain',
+      action: () => fetch(`/api/trace-error${traceQ({ type: 'deep' })}`).catch(() => {}),
+    },
+    {
+      label: '⏳ Async Trace Error',
+      source: 'async',
+      title: 'Async operation failure recorded on the active span',
+      action: () => fetch(`/api/trace-error${traceQ({ type: 'async' })}`).catch(() => {}),
+    },
+    {
+      label: '🌍 External HTTP Span',
+      source: 'external',
+      title: 'HTTP client child span fails on upstream 500',
+      action: () => fetch(`/api/trace-error${traceQ({ type: 'external' })}`).catch(() => {}),
+    },
+    {
+      label: '⚡ Edge Fatal Trace',
+      source: 'edge',
+      title: 'Fatal error inside an edge-runtime OTEL span',
+      action: () => fetch(`/api/trace-edge-error${traceQ({})}`).catch(() => {}),
+    },
+    {
+      label: '⚡ Edge Handled Trace',
+      source: 'edge',
+      title: 'Handled edge span error returning HTTP 500',
+      action: () => fetch(`/api/trace-edge-error${traceQ({ type: 'handled' })}`).catch(() => {}),
+    },
+  ]
+
   return (
     <div className={styles.layout}>
       <div className={styles.panel}>
@@ -263,15 +379,74 @@ export default function Index() {
         </div>
       </div>
 
-      <section className={styles.panel}>
-        <h2 className={styles.titleList}> People List</h2>
-        <p className={styles.subtitleList}>List for Redirection — people loaded from the API</p>
-        <ul className={styles.peopleList}>
-          {data.map((p) => (
-            <PersonComponent key={p.id} person={p} />
-          ))}
-        </ul>
-      </section>
+      <div className={styles.rightColumn}>
+        <section className={styles.panelTraceTop}>
+          <h2 className={styles.title}>Vercel Trace Triggers</h2>
+          <p className={styles.subtitle}>
+            Generate error traces via OpenTelemetry spans — visible in your Vercel Trace drain.
+          </p>
+
+          <div className={styles.prefixBox}>
+            <label htmlFor="trace-group-prefix" className={styles.label}>
+              Trace grouping prefix (optional)
+            </label>
+            <input
+              id="trace-group-prefix"
+              type="text"
+              value={traceGroupPrefix}
+              onChange={(e) => setTraceGroupPrefix(e.target.value)}
+              placeholder="e.g. checkout-trace — same prefix groups traces in your observability tool"
+              className={styles.input}
+            />
+            <p className={styles.hint}>
+              Prepends <code className={styles.code}>[your-text]</code> to trace error messages.
+              Reuse the same prefix to test grouping. Use <strong>🎲 Random</strong> per category for
+              a unique trace error each click.
+            </p>
+          </div>
+
+          <div className={styles.scrollArea}>
+            {traceSources.map((source) => (
+              <div key={`trace-${source}`} className={styles.sourceGroup}>
+                <div className={traceSourceLabelClass[source]}>{source}</div>
+                <div>
+                  {traceButtons
+                    .filter((b) => b.source === source)
+                    .map((b) => (
+                      <button
+                        key={b.label}
+                        type="button"
+                        title={b.title}
+                        className={traceSourceBtnClass[source]}
+                        onClick={b.action}
+                      >
+                        {b.label}
+                      </button>
+                    ))}
+                  <button
+                    type="button"
+                    title="Generates a new unique trace error on every click (ignores trace grouping prefix)"
+                    className={`${traceSourceBtnClass[source]} ${styles.btnRandom}`}
+                    onClick={() => triggerTraceRandom(source)}
+                  >
+                    🎲 Random
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.panelListBottom}>
+          <h2 className={styles.titleList}>People List</h2>
+          <p className={styles.subtitleList}>Earlier demo - People loaded from the API</p>
+          <ul className={styles.peopleList}>
+            {data.map((p) => (
+              <PersonComponent key={p.id} person={p} />
+            ))}
+          </ul>
+        </section>
+      </div>
     </div>
   )
 }
