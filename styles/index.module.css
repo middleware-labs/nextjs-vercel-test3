@@ -240,6 +240,46 @@
   gap: 12px;
 }
 
+.sourceHttp {
+  composes: sourceLabel;
+  color: #b91c1c;
+}
+
+.sourceOtel {
+  composes: sourceLabel;
+  color: #64748b;
+}
+
+.btnHttp404 {
+  composes: btn;
+  background: #f59e0b;
+}
+
+.btnHttp403 {
+  composes: btn;
+  background: #d97706;
+}
+
+.btnHttp500 {
+  composes: btn;
+  background: #dc2626;
+}
+
+.btnHttp502 {
+  composes: btn;
+  background: #b91c1c;
+}
+
+.btnHttp503 {
+  composes: btn;
+  background: #991b1b;
+}
+
+.btnHttpThrow {
+  composes: btn;
+  background: #7f1d1d;
+}
+
 .sourceTraceLambda {
   composes: sourceLabel;
   color: #0891b2;

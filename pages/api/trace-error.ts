@@ -2,34 +2,33 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { parseMsgParam } from '../../lib/errorMsg'
 import {
   finishSpanAsError,
-  finishSpansAndThrow,
   startChildOf,
   startLinkedSpan,
   traceError,
-  throwRequestTraceError,
+  throwTraceError,
 } from '../../lib/traceUtil'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const type = Array.isArray(req.query.type) ? req.query.type[0] : req.query.type
-  const tag = parseMsgParam(req.query.msg)
+/**
+ * Trace drain note: look for serverless spans (service.name = nextjs-vercel-test-1.0),
+ * not only vercel.edge-network — edge spans may keep status {} even on 500.
+ * Throwing ensures the function trace gets status.code: 2.
+ */
+export default async function handler(_req: NextApiRequest, _res: NextApiResponse) {
+  const type = Array.isArray(_req.query.type) ? _req.query.type[0] : _req.query.type
+  const tag = parseMsgParam(_req.query.msg)
 
-  // Fatal — unhandled throw marks request span as ERROR (Vercel trace drain)
   if (!type || type === 'fatal') {
-    throwRequestTraceError(
+    throwTraceError(
       traceError('[TRACE] Fatal serverless trace error — intentional test', tag)
     )
   }
 
   if (type === 'async') {
-    try {
-      await new Promise<void>((_, reject) => {
-        setTimeout(() => {
-          reject(traceError('[TRACE] Async operation failed in traced context', tag))
-        }, 50)
-      })
-    } catch (error) {
-      throwRequestTraceError(error as Error)
-    }
+    await new Promise<void>((_, reject) => {
+      setTimeout(() => {
+        reject(traceError('[TRACE] Async operation failed in traced context', tag))
+      }, 50)
+    })
   }
 
   if (type === 'rejection') {
@@ -38,22 +37,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       tag
     )
     Promise.reject(error)
-    throwRequestTraceError(error)
+    throwTraceError(error)
   }
 
-  // Handled — custom ERROR span + throw so request trace is also ERROR
   if (type === 'handled') {
     const span = startLinkedSpan('trace-trigger.handled')
-    const error = traceError('[TRACE] Handled serverless trace error — intentional test', tag)
-    finishSpansAndThrow(span, error)
+    throwTraceError(
+      traceError('[TRACE] Handled serverless trace error — intentional test', tag),
+      span
+    )
   }
 
   if (type === 'nested') {
     const span = startLinkedSpan('trace-trigger.db.query')
     span.setAttribute('db.system', 'postgresql')
     span.setAttribute('db.operation', 'SELECT')
-    const error = traceError('[TRACE] Nested child span database query failure', tag)
-    finishSpansAndThrow(span, error)
+    throwTraceError(
+      traceError('[TRACE] Nested child span database query failure', tag),
+      span
+    )
   }
 
   if (type === 'deep') {
@@ -65,7 +67,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     finishSpanAsError(dbSpan, error)
     finishSpanAsError(repoSpan, error)
     finishSpanAsError(serviceSpan, error)
-    throwRequestTraceError(error)
+    throwTraceError(error)
   }
 
   if (type === 'external') {
@@ -74,11 +76,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     span.setAttribute('http.url', 'https://api.example.com/checkout')
     try {
       const response = await fetch('https://httpstat.us/500', { cache: 'no-store' })
-      const error = traceError(
-        `[TRACE] External HTTP client span failed with status ${response.status}`,
-        tag
+      throwTraceError(
+        traceError(
+          `[TRACE] External HTTP client span failed with status ${response.status}`,
+          tag
+        ),
+        span
       )
-      finishSpansAndThrow(span, error)
     } catch (err) {
       const error =
         err instanceof Error && err.message.includes('[TRACE]')
@@ -87,9 +91,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               '[TRACE] External HTTP client span failure: ' + (err as Error).message,
               tag
             )
-      finishSpansAndThrow(span, error)
+      throwTraceError(error, span)
     }
   }
 
-  throwRequestTraceError(traceError('[TRACE] Unknown trace trigger type', tag))
+  throwTraceError(traceError('[TRACE] Unknown trace trigger type', tag))
 }

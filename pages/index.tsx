@@ -88,6 +88,35 @@ export default function Index() {
     return s ? `?${s}` : ''
   }
 
+  const httpQ = (params: Record<string, string>) => traceQ(params)
+
+  /** Simple HTTP status responses — shows http.status_code on vercel.edge-network traces */
+  const triggerHttp = (url: string) => {
+    fetch(url)
+      .then(async (res) => {
+        const text = await res.text()
+        console.log('[HTTP error]', res.status, text.slice(0, 200))
+      })
+      .catch((err) => console.error('[HTTP error] request failed', err))
+  }
+
+  const triggerHttpRandom = () => {
+    const statuses = [500, 502, 503, 404, 403]
+    const status = statuses[Math.floor(Math.random() * statuses.length)]
+    const tag = randomLogTag()
+    triggerHttp(`/api/http-error?status=${status}&msg=${encodeURIComponent(tag)}`)
+  }
+
+  /** OTEL trace APIs — throw-based; check serverless spans in drain */
+  const triggerTrace = (url: string) => {
+    fetch(url)
+      .then(async (res) => {
+        const text = await res.text()
+        console.log('[Trace trigger] HTTP', res.status, text.slice(0, 200))
+      })
+      .catch((err) => console.error('[Trace trigger] request failed', err))
+  }
+
   const triggerRandom = (source: Source) => {
     const tag = randomLogTag()
     const encoded = encodeURIComponent(tag)
@@ -123,19 +152,19 @@ export default function Index() {
 
     switch (source) {
       case 'lambda':
-        fetch(`/api/trace-error?msg=${encoded}`).catch(() => {})
+        triggerTrace(`/api/trace-error?msg=${encoded}`)
         break
       case 'nested':
-        fetch(`/api/trace-error?type=nested&msg=${encoded}`).catch(() => {})
+        triggerTrace(`/api/trace-error?type=nested&msg=${encoded}`)
         break
       case 'async':
-        fetch(`/api/trace-error?type=async&msg=${encoded}`).catch(() => {})
+        triggerTrace(`/api/trace-error?type=async&msg=${encoded}`)
         break
       case 'external':
-        fetch(`/api/trace-error?type=external&msg=${encoded}`).catch(() => {})
+        triggerTrace(`/api/trace-error?type=external&msg=${encoded}`)
         break
       case 'edge':
-        fetch(`/api/trace-edge-error?msg=${encoded}`).catch(() => {})
+        triggerTrace(`/api/trace-edge-error?msg=${encoded}`)
         break
     }
   }
@@ -262,60 +291,70 @@ export default function Index() {
     },
   ]
 
+  const httpErrorButtons: { label: string; status: number; className: string; throw?: boolean }[] =
+    [
+      { label: '404 Not Found', status: 404, className: styles.btnHttp404 },
+      { label: '403 Forbidden', status: 403, className: styles.btnHttp403 },
+      { label: '500 Server Error', status: 500, className: styles.btnHttp500 },
+      { label: '502 Bad Gateway', status: 502, className: styles.btnHttp502 },
+      { label: '503 Unavailable', status: 503, className: styles.btnHttp503 },
+      { label: '500 Throw', status: 500, className: styles.btnHttpThrow, throw: true },
+    ]
+
   const traceButtons: TraceButton[] = [
     {
       label: '🔴 Fatal Trace',
       source: 'lambda',
       title: 'Throws on /api/trace-error — request span status ERROR in trace drain',
-      action: () => fetch(`/api/trace-error${traceQ({})}`).catch(() => {}),
+      action: () => triggerTrace(`/api/trace-error${traceQ({})}`),
     },
     {
       label: '🔴 Handled Trace',
       source: 'lambda',
-      title: 'Custom ERROR span + throw — request and child span error in trace drain',
-      action: () => fetch(`/api/trace-error${traceQ({ type: 'handled' })}`).catch(() => {}),
+      title: 'Custom ERROR span + request span — check browser console for spanMarked: true',
+      action: () => triggerTrace(`/api/trace-error${traceQ({ type: 'handled' })}`),
     },
     {
       label: '🔴 Trace Rejection',
       source: 'lambda',
-      title: 'Unhandled rejection + throw — request span ERROR in trace drain',
-      action: () => fetch(`/api/trace-error${traceQ({ type: 'rejection' })}`).catch(() => {}),
+      title: 'Rejection path — request span ERROR in trace drain',
+      action: () => triggerTrace(`/api/trace-error${traceQ({ type: 'rejection' })}`),
     },
     {
       label: '🧩 Child Span Error',
       source: 'nested',
-      title: 'Linked child span ERROR + throw — visible in trace drain',
-      action: () => fetch(`/api/trace-error${traceQ({ type: 'nested' })}`).catch(() => {}),
+      title: 'Linked child span ERROR — check browser console for spanMarked: true',
+      action: () => triggerTrace(`/api/trace-error${traceQ({ type: 'nested' })}`),
     },
     {
       label: '🧩 Deep Nested Error',
       source: 'nested',
       title: 'Fails at the deepest span in a 3-level nested chain',
-      action: () => fetch(`/api/trace-error${traceQ({ type: 'deep' })}`).catch(() => {}),
+      action: () => triggerTrace(`/api/trace-error${traceQ({ type: 'deep' })}`),
     },
     {
       label: '⏳ Async Trace Error',
       source: 'async',
-      title: 'Async operation failure recorded on the active span',
-      action: () => fetch(`/api/trace-error${traceQ({ type: 'async' })}`).catch(() => {}),
+      title: 'Async operation failure on the active request span',
+      action: () => triggerTrace(`/api/trace-error${traceQ({ type: 'async' })}`),
     },
     {
       label: '🌍 External HTTP Span',
       source: 'external',
       title: 'HTTP client child span fails on upstream 500',
-      action: () => fetch(`/api/trace-error${traceQ({ type: 'external' })}`).catch(() => {}),
+      action: () => triggerTrace(`/api/trace-error${traceQ({ type: 'external' })}`),
     },
     {
       label: '⚡ Edge Fatal Trace',
       source: 'edge',
       title: 'Fatal error inside an edge-runtime OTEL span',
-      action: () => fetch(`/api/trace-edge-error${traceQ({})}`).catch(() => {}),
+      action: () => triggerTrace(`/api/trace-edge-error${traceQ({})}`),
     },
     {
       label: '⚡ Edge Handled Trace',
       source: 'edge',
       title: 'Handled edge span error returning HTTP 500',
-      action: () => fetch(`/api/trace-edge-error${traceQ({ type: 'handled' })}`).catch(() => {}),
+      action: () => triggerTrace(`/api/trace-edge-error${traceQ({ type: 'handled' })}`),
     },
   ]
 
@@ -383,29 +422,58 @@ export default function Index() {
         <section className={styles.panelTraceTop}>
           <h2 className={styles.title}>Vercel Trace Triggers</h2>
           <p className={styles.subtitle}>
-            Generate error traces via OpenTelemetry spans — visible in your Vercel Trace drain.
+            Use HTTP Error buttons first — real status codes appear on edge-network traces
+            (http.status_code). OTEL buttons below need serverless spans in the drain.
           </p>
 
           <div className={styles.prefixBox}>
             <label htmlFor="trace-group-prefix" className={styles.label}>
-              Trace grouping prefix (optional)
+              Grouping prefix (optional)
             </label>
             <input
               id="trace-group-prefix"
               type="text"
               value={traceGroupPrefix}
               onChange={(e) => setTraceGroupPrefix(e.target.value)}
-              placeholder="e.g. checkout-trace — same prefix groups traces in your observability tool"
+              placeholder="Prepended to HTTP / trace error messages"
               className={styles.input}
             />
-            <p className={styles.hint}>
-              Prepends <code className={styles.code}>[your-text]</code> to trace error messages.
-              Reuse the same prefix to test grouping. Use <strong>🎲 Random</strong> per category for
-              a unique trace error each click.
-            </p>
           </div>
 
           <div className={styles.scrollArea}>
+            <div className={styles.sourceGroup}>
+              <div className={styles.sourceHttp}>http errors (recommended)</div>
+              <div>
+                {httpErrorButtons.map((b) => (
+                  <button
+                    key={b.label}
+                    type="button"
+                    title={`GET /api/http-error?status=${b.status} — real HTTP ${b.status} response`}
+                    className={b.className}
+                    onClick={() => {
+                      const params: Record<string, string> = { status: String(b.status) }
+                      if (b.throw) params.throw = 'true'
+                      triggerHttp(`/api/http-error${httpQ(params)}`)
+                    }}
+                  >
+                    {b.label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  title="Random HTTP 4xx/5xx with unique message"
+                  className={`${styles.btnHttp500} ${styles.btnRandom}`}
+                  onClick={triggerHttpRandom}
+                >
+                  🎲 Random HTTP
+                </button>
+              </div>
+            </div>
+
+            <div className={styles.sourceGroup}>
+              <div className={styles.sourceOtel}>otel traces (advanced)</div>
+            </div>
+
             {traceSources.map((source) => (
               <div key={`trace-${source}`} className={styles.sourceGroup}>
                 <div className={traceSourceLabelClass[source]}>{source}</div>
