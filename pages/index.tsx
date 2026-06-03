@@ -266,25 +266,25 @@ export default function Index() {
     {
       label: '🔴 Fatal Trace',
       source: 'lambda',
-      title: 'Throws a fatal error inside an active OTEL span (nodejs)',
+      title: 'Throws on /api/trace-error — request span status ERROR in trace drain',
       action: () => fetch(`/api/trace-error${traceQ({})}`).catch(() => {}),
     },
     {
       label: '🔴 Handled Trace',
       source: 'lambda',
-      title: 'Records exception on span and returns HTTP 500',
+      title: 'Custom ERROR span + throw — request and child span error in trace drain',
       action: () => fetch(`/api/trace-error${traceQ({ type: 'handled' })}`).catch(() => {}),
     },
     {
       label: '🔴 Trace Rejection',
       source: 'lambda',
-      title: 'Triggers unhandled promise rejection inside an active span',
+      title: 'Unhandled rejection + throw — request span ERROR in trace drain',
       action: () => fetch(`/api/trace-error${traceQ({ type: 'rejection' })}`).catch(() => {}),
     },
     {
       label: '🧩 Child Span Error',
       source: 'nested',
-      title: 'Fails a nested child span (simulated DB query)',
+      title: 'Linked child span ERROR + throw — visible in trace drain',
       action: () => fetch(`/api/trace-error${traceQ({ type: 'nested' })}`).catch(() => {}),
     },
     {

@@ -1,7 +1,11 @@
-import { SpanKind } from '@opentelemetry/api'
 import { NextRequest } from 'next/server'
 import { parseMsgParam } from '../../lib/errorMsg'
-import { markSpanError, runActiveSpan, traceError } from '../../lib/traceUtil'
+import {
+  finishSpansAndThrow,
+  startLinkedSpan,
+  traceError,
+  throwRequestTraceError,
+} from '../../lib/traceUtil'
 
 export const config = {
   runtime: 'edge',
@@ -12,31 +16,15 @@ export default async function handler(req: NextRequest) {
   const type = searchParams.get('type')
   const tag = parseMsgParam(searchParams.get('msg') ?? undefined)
 
-  return runActiveSpan(
-    'api /api/trace-edge-error',
-    async (span) => {
-      span.setAttributes({
-        'http.method': 'GET',
-        'http.route': '/api/trace-edge-error',
-        'trace.trigger.runtime': 'edge',
-        'trace.trigger.type': type ?? 'fatal',
-      })
+  if (!type || type === 'fatal') {
+    throwRequestTraceError(traceError('[TRACE] Fatal edge trace error — intentional test', tag))
+  }
 
-      if (type === 'handled') {
-        const error = traceError('[TRACE] Handled edge trace error — intentional test', tag)
-        markSpanError(span, error)
-        span.setAttribute('http.status_code', 500)
-        return new Response(JSON.stringify({ error: error.message, trace: 'handled' }), {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
-        })
-      }
+  if (type === 'handled') {
+    const span = startLinkedSpan('trace-trigger.edge.handled')
+    const error = traceError('[TRACE] Handled edge trace error — intentional test', tag)
+    finishSpansAndThrow(span, error)
+  }
 
-      const error = traceError('[TRACE] Fatal edge trace error — intentional test', tag)
-      markSpanError(span, error)
-      span.setAttribute('http.status_code', 500)
-      throw error
-    },
-    { kind: SpanKind.SERVER }
-  )
+  throwRequestTraceError(traceError('[TRACE] Fatal edge trace error — intentional test', tag))
 }

@@ -1,60 +1,71 @@
-import { context, Span, SpanKind, SpanStatusCode, trace } from '@opentelemetry/api'
+import { context, trace, Span, SpanStatusCode } from '@opentelemetry/api'
 import { prefixErrorMessage } from './errorMsg'
 
+/** Custom tracer — works with @vercel/otel instrumentation. */
 export const traceTracer = trace.getTracer('vercel-trace-triggers', '1.0')
+
+/** OpenTelemetry ERROR status code (2) — used by Vercel trace drains. */
+export const STATUS_CODE_ERROR = SpanStatusCode.ERROR
 
 export function traceError(baseMessage: string, tag?: string): Error {
   return new Error(prefixErrorMessage(baseMessage, tag))
 }
 
-/** Mark span as ERROR for Vercel trace drain (status + semantic attributes). */
-export function markSpanError(span: Span, error: Error): void {
-  span.recordException(error)
-  span.setStatus({ code: SpanStatusCode.ERROR, message: error.message })
+/** Semantic error attributes — helps trace drains and grouping by message. */
+export function applyErrorAttributes(span: Span, error: Error): void {
   span.setAttribute('error', true)
   span.setAttribute('otel.status_code', 'ERROR')
   span.setAttribute('exception.type', error.name)
   span.setAttribute('exception.message', error.message)
 }
 
-export function runActiveSpan<T>(
-  name: string,
-  fn: (span: Span) => Promise<T> | T,
-  options?: { kind?: SpanKind; attributes?: Record<string, string | number | boolean> }
-): Promise<T> {
-  return traceTracer.startActiveSpan(
-    name,
-    {
-      kind: options?.kind ?? SpanKind.INTERNAL,
-      attributes: options?.attributes,
-    },
-    async (span) => {
-      try {
-        return await fn(span)
-      } catch (err) {
-        if (span.isRecording()) {
-          markSpanError(span, err as Error)
-        }
-        throw err
-      } finally {
-        span.end()
-      }
-    }
-  )
+/** Start a child span linked to the current request span (if present). */
+export function startLinkedSpan(name: string): Span {
+  const parent = trace.getActiveSpan()
+  const parentCtx = parent ? trace.setSpan(context.active(), parent) : context.active()
+  return traceTracer.startSpan(name, {}, parentCtx)
 }
 
-export function startChildSpan(name: string, parent: Span): Span {
+/** Start a child span under an explicit parent span. */
+export function startChildOf(name: string, parent: Span): Span {
   const parentCtx = trace.setSpan(context.active(), parent)
-  return traceTracer.startSpan(
-    name,
-    { kind: SpanKind.INTERNAL },
-    parentCtx
-  )
+  return traceTracer.startSpan(name, {}, parentCtx)
 }
 
-export function endSpanError(span: Span, error: Error): void {
-  if (span.isRecording()) {
-    markSpanError(span, error)
-    span.end()
-  }
+/**
+ * Vercel-recommended pattern: set span status to ERROR, record exception, end span.
+ */
+export function finishSpanAsError(span: Span, error: Error): void {
+  span.setStatus({
+    code: STATUS_CODE_ERROR,
+    message: error.message,
+  })
+  applyErrorAttributes(span, error)
+  span.recordException(error)
+  span.end()
+}
+
+/** Mark the active request span as ERROR (the span Vercel exports to trace drains). */
+export function markActiveSpanError(error: Error): void {
+  const active = trace.getActiveSpan()
+  if (!active?.isRecording()) return
+  active.setStatus({ code: STATUS_CODE_ERROR, message: error.message })
+  applyErrorAttributes(active, error)
+  active.recordException(error)
+}
+
+/**
+ * Custom span ERROR + request span ERROR + throw.
+ * Throwing ensures the HTTP trace is error-typed in Vercel trace drains.
+ */
+export function finishSpansAndThrow(customSpan: Span, error: Error): never {
+  finishSpanAsError(customSpan, error)
+  markActiveSpanError(error)
+  throw error
+}
+
+/** Request-only error trace (fatal / async / rejection). */
+export function throwRequestTraceError(error: Error): never {
+  markActiveSpanError(error)
+  throw error
 }
