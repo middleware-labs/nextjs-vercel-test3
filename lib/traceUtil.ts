@@ -14,6 +14,7 @@ export function traceError(baseMessage: string, tag?: string): Error {
 /** Semantic error attributes — helps trace drains and grouping by message. */
 export function applyErrorAttributes(span: Span, error: Error): void {
   span.setAttribute('error', true)
+  span.setAttribute('http.status_code', 500)
   span.setAttribute('otel.status_code', 'ERROR')
   span.setAttribute('exception.type', error.name)
   span.setAttribute('exception.message', error.message)
