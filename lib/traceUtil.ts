@@ -36,6 +36,8 @@ export function runActiveSpan<T>(
           markSpanError(span, err as Error)
         }
         throw err
+      } finally {
+        span.end()
       }
     }
   )
