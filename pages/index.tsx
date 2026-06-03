@@ -112,7 +112,6 @@ export default function Index() {
     fetch(url)
       .then(async (res) => {
         const text = await res.text()
-        console.log('[Trace trigger] HTTP', res.status, text.slice(0, 200))
       })
       .catch((err) => console.error('[Trace trigger] request failed', err))
   }
@@ -309,9 +308,16 @@ export default function Index() {
       action: () => triggerTrace(`/api/trace-error${traceQ({})}`),
     },
     {
+      label: '🗄️ DB Span Error',
+      source: 'lambda',
+      title:
+        'Vercel pattern: custom-tracer database-operation span with status.code=2 + HTTP 500 (/api/trace-db-error)',
+      action: () => triggerHttp(`/api/trace-db-error${httpQ({})}`),
+    },
+    {
       label: '🔴 Handled Trace',
       source: 'lambda',
-      title: 'Custom ERROR span + request span — check browser console for spanMarked: true',
+      title: 'Same as DB Span — linked child span + throw (/api/trace-error?type=handled)',
       action: () => triggerTrace(`/api/trace-error${traceQ({ type: 'handled' })}`),
     },
     {
@@ -422,8 +428,11 @@ export default function Index() {
         <section className={styles.panelTraceTop}>
           <h2 className={styles.title}>Vercel Trace Triggers</h2>
           <p className={styles.subtitle}>
-            Use HTTP Error buttons first — real status codes appear on edge-network traces
-            (http.status_code). OTEL buttons below need serverless spans in the drain.
+            Trace drain (OTLP → Middleware): use <strong>HTTP errors</strong> for{' '}
+            <code className={styles.code}>vercel.edge-network</code> +{' '}
+            <code className={styles.code}>http.status_code</code>. Use <strong>OTEL traces</strong>{' '}
+            for <code className={styles.code}>nextjs-vercel-test-1.0</code> +{' '}
+            <code className={styles.code}>status.code: 2</code>. See docs/TRACE_DRAIN.md.
           </p>
 
           <div className={styles.prefixBox}>
@@ -466,6 +475,32 @@ export default function Index() {
                   onClick={triggerHttpRandom}
                 >
                   🎲 Random HTTP
+                </button>
+              </div>
+            </div>
+
+            <div className={styles.sourceGroup}>
+              <div className={styles.sourceOtel}>vercel span pattern (status.code = 2)</div>
+              <div>
+                <button
+                  type="button"
+                  title="GET /api/trace-db-error — tracer.startSpan, setStatus(2), recordException, res.status(500)"
+                  className={styles.btnTraceLambda}
+                  onClick={() => triggerHttp(`/api/trace-db-error${httpQ({})}`)}
+                >
+                  🗄️ Database Span Error
+                </button>
+                <button
+                  type="button"
+                  title="Same endpoint with random msg prefix"
+                  className={`${styles.btnTraceLambda} ${styles.btnRandom}`}
+                  onClick={() =>
+                    triggerHttp(
+                      `/api/trace-db-error?msg=${encodeURIComponent(randomLogTag())}`
+                    )
+                  }
+                >
+                  🎲 Random DB Span
                 </button>
               </div>
             </div>

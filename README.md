@@ -2,6 +2,13 @@
 
 Next.js ships with [API routes](https://nextjs.org/docs/api-routes/introduction) which provides an easy solution to build your own `API`. This example shows how to create multiple `API` endpoints with serverless functions, which can execute independently.
 
+## Vercel Trace Drains → Middleware
+
+This repo is set up for **Trace Drain v2** (`otlphttp`) to a Middleware-style endpoint
+(`…/v1/traces/vercel` with `mw-api-key`, `mw-account-uid`, `mw-project-uid` headers).
+See **[docs/TRACE_DRAIN.md](./docs/TRACE_DRAIN.md)** for how that maps to the UI buttons
+(HTTP errors vs OTEL traces) and example Middleware filters.
+
 ## Vercel Trace Drains Setup
 
 This project is configured to use Vercel Trace Drains with OpenTelemetry. To enable tracing:
