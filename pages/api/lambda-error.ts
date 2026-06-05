@@ -20,12 +20,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       return obj.nonExistentMethod()
     } catch (err) {
-      throw new Error(
-        prefixErrorMessage(
-          '[FATAL] Null reference crash in lambda: ' + (err as Error).message,
-          tag
-        )
+      const message = prefixErrorMessage(
+        '[FATAL] Null reference crash in lambda: ' + (err as Error).message,
+        tag
       )
+      console.error(message)
+      return res.status(500).json({ error: message })
     }
   }
 
