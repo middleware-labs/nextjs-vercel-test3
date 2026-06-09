@@ -29,8 +29,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   }
 
-  console.error(prefixErrorMessage('[FATAL] Lambda source fatal error triggered intentionally', tag))
-  throw new Error(
-    prefixErrorMessage('[FATAL] Critical lambda function failure — intentional test error', tag)
-  )
+  const message = prefixErrorMessage('[FATAL] Lambda source fatal error triggered intentionally', tag)
+  console.error(message)
+  try {
+    throw new Error(
+      prefixErrorMessage('[FATAL] Critical lambda function failure — intentional test error', tag)
+    )
+  } catch (err) {
+    return res.status(500).json({ error: (err as Error).message })
+  }
 }
